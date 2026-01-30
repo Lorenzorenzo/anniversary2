@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Anniversary Wrapped</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: black;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+}
+
+.feed {
+  height: 100vh;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+}
+
+.video-container {
+  height: 100vh;
+  width: 100%;
+  scroll-snap-align: start;
+  position: relative;
+}
+
+video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Audio button */
+.audio-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border: none;
+  padding: 12px 14px;
+  border-radius: 50%;
+  font-size: 18px;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<button class="audio-btn" id="audioToggle">🔇</button>
+
+<div class="feed" id="feed"></div>
+
+<script>
+const feed = document.getElementById("feed");
+const totalVideos = 25;
+let muted = true;
+
+// Create video elements
+for (let i = 1; i <= totalVideos; i++) {
+  const container = document.createElement("div");
+  container.className = "video-container";
+
+  const video = document.createElement("video");
+  video.src = `videos/video${i}.mp4`;
+  video.loop = true;
+  video.muted = true;
+  video.playsInline = true;
+
+  container.appendChild(video);
+  feed.appendChild(container);
+}
+
+// Intersection Observer for autoplay
+const videos = document.querySelectorAll("video");
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    const video = entry.target;
+    if (entry.isIntersecting) {
+      video.play();
+    } else {
+      video.pause();
+    }
+  });
+}, { threshold: 0.7 });
+
+videos.forEach(video => observer.observe(video));
+
+// Audio toggle
+const audioBtn = document.getElementById("audioToggle");
+
+audioBtn.addEventListener("click", () => {
+  muted = !muted;
+
+  videos.forEach(video => {
+    video.muted = muted;
+  });
+
+  audioBtn.textContent = muted ? "🔇" : "🔊";
+});
+</script>
+
+</body>
+</html>
